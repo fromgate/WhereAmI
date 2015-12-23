@@ -1,0 +1,11 @@
+name: WhereAmI
+main: ru.nukkit.whereami.WhereAmI
+version: "0.0.1"
+author: fromgate, nukkit.ru
+api: ["1.0.0"]
+description: Regions, regions, regions!
+commands:
+  whereami:
+    aliases: ["wami"]
+    description: Test command
+    usage: "/whereami"
