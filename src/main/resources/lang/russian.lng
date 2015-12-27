@@ -1,0 +1,14 @@
+lng_load_fail: Failed to load languages from file. Default message used
+lng_save_fail: Не удалось сохранить файл перевода
+lng_print_fail: Не удалось распечатать сообщение %1%. Получатель - null.
+lng_config: '[MESSAGES] Сообщений: %1% Язык: %2% Сохранить файл перевода: %1% Режим отладки: %3%'
+enabled: включен
+disabled: выключен
+word_unknown: Unknown
+cmd_wami_desc: Отобразить текущие координаты
+your_coord: 'Твои координаты: %1%'
+info_desc: 'Включить/выключить режим показа координат'
+info_state: 'Режим показа координат: %1%'
+cord_server: '[Server] Дорогой %1%, ты находишься тут: %2%'
+coord_wxyz: '%1%'
+coord_wxyzpy: '%1% pitch:%2% yaw:%3%'
