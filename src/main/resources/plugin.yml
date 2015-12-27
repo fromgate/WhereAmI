@@ -3,4 +3,4 @@ main: ru.nukkit.whereami.WhereAmI
 version: "0.0.2"
 author: fromgate, nukkit.ru
 api: ["1.0.0"]
-description: Regions, regions, regions!
+description: Where am I?!
