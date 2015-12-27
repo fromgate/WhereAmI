@@ -1,6 +1,5 @@
 package ru.nukkit.whereami;
 
-import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.PluginBase;
 import ru.nukkit.whereami.commands.Commander;
 import ru.nukkit.whereami.util.Message;
@@ -9,7 +8,7 @@ import ru.nukkit.whereami.util.Util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WhereAmI extends PluginBase implements Listener {
+public class WhereAmI extends PluginBase {
 
     private static WhereAmI instance;
 
