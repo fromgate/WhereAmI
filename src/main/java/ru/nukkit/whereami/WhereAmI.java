@@ -21,10 +21,10 @@ public class WhereAmI extends PluginBase {
         instance = this;
         this.getDataFolder().mkdirs();
         this.reloadConfig();
-        fullInfo =getConfig().getNested("where-am-i.show-full-info",false);
-        getConfig().setNested("where-am-i.show-full-info",fullInfo);
-        chatMask =getConfig().getNested("where-am-i.chat-regex-mask","(?i)where\\s+am\\s+i");
-        getConfig().setNested("where-am-i.chat-regex-mask",chatMask);
+        fullInfo =getConfig().getBoolean("where-am-i.show-full-info",false);
+        getConfig().set("where-am-i.show-full-info",fullInfo);
+        chatMask =getConfig().getString("where-am-i.chat-regex-mask","(?i)where\\s+am\\s+i");
+        getConfig().set("where-am-i.chat-regex-mask",chatMask);
         chatMaskPattern = Pattern.compile(chatMask);
         this.saveConfig();
     }

@@ -32,14 +32,12 @@ public enum Message {
     COORD_WXYZ ("%1%"),
     COORD_WXYZPY ("%1% pitch:%2% yaw:%3%");
 
-	private static PluginBase plugin = null;
 	private static boolean debugMode = false;
 	private static String language = "english";
-	//private static boolean languageSave=false;
 	private static char c1 = 'a';
 	private static char c2 = '2';
 
-
+	private static PluginBase plugin = null;
 
 	/**
 	 * This is my favorite debug routine :) I use it everywhere to print out variable values
@@ -50,8 +48,6 @@ public enum Message {
 	public static void BC (Object... s){
 		if (!debugMode) return;
 		if (s.length==0) return;
-
-
 		StringBuilder sb = new StringBuilder("&3[").append(plugin.getDescription().getName()).append("]&f ");
 		for (Object str : s)
 			sb.append(str.toString()).append(" ");
@@ -63,7 +59,7 @@ public enum Message {
 	/**
 	 * Send current message to log files
 	 * @param s
-	 * @return вЂ” always returns true.
+	 * @return — always returns true.
 	 * Examples:
 	 * Message.ERROR_MESSAGE.log(variable1); // just print in log
 	 * return Message.ERROR_MESSAGE.log(variable1); // print in log and return value true
@@ -76,13 +72,20 @@ public enum Message {
 	/**
 	 * Same as log, but will printout nothing if debug mode is disabled
 	 * @param s
-	 * @return
+	 * @return — always returns true.
 	 */
 	public boolean debug(Object... s){
 		if (debugMode) plugin.getLogger().info(TextFormat.clean(getText (s)));
 		return true;
 	}
 
+	/**
+	 * Show a message to player in center of screen (this routine unfinished yet)
+	 * @param seconds — how much time (in seconds) to show message
+	 * @param sender — Player
+	 * @param s
+	 * @return — always returns true.
+	 */
 	public boolean tip (int seconds, CommandSender sender, Object... s){
 		if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
 		final Player player = sender instanceof Player ? (Player) sender : null;
@@ -96,6 +99,12 @@ public enum Message {
 		return true;
 	}
 
+	/**
+	 * Show a message to player in center of screen
+	 * @param sender — Player
+	 * @param s
+	 * @return — always returns true.
+	 */
 	public boolean tip (CommandSender sender, Object... s){
 		if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
 		Player player = sender instanceof Player ? (Player) sender : null;
@@ -109,7 +118,7 @@ public enum Message {
 	 * Send message to Player or to ConsoleSender
 	 * @param sender
 	 * @param s
-	 * @return
+	 * @return — always returns true.
 	 */
 	public boolean print (CommandSender sender, Object... s){
 		if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
@@ -121,7 +130,7 @@ public enum Message {
 	 * Send message to all players or to players with defined permission
 	 * @param permission
 	 * @param s
-	 * @return
+	 * @return — always returns true.
 	 *
 	 * Examples:
 	 * Message.MSG_BROADCAST.broadcast ("pluginname.broadcast"); // send message to all players with permission "pluginname.broadcast"
@@ -138,16 +147,37 @@ public enum Message {
 	/**
 	 * Get formated text.
 	 * @param keys
+	 *
+	 ** Keys - are parameters for message and control-codes.
+	 * Parameters will be shown in position in original message according for position.
+	 * This keys are used in every method that prints or sends message.
+	 *
+	 * Example:
+	 *
+	 * EXAMPLE_MESSAGE ("Message with parameters: %1%, %2% and %3%");
+	 * Message.EXAMPLE_MESSAGE.getText("one","two","three"); //will return text "Message with parameters: one, two and three"
+	 *
+	 ** Color codes
+	 * You can use two colors to define color of message, just use character symbol related for color.
+	 *
+	 * Message.EXAMPLE_MESSAGE.getText("one","two","three",'c','4');  // this message will be red, but word one, two, three - dark red
+	 *
+	 ** Control codes
+	 * Control codes are text parameteres, that will be ignored and don't shown as ordinary parameter
+	 * - "SKIPCOLOR" - use this to disable colorizing of parameters
+	 * - "NOCOLOR" (or "NOCOLORS") - return uncolored text, clear all colors in text
+	 * - "FULLFLOAT" - show full float number, by default it limit by two symbols after point (0.15 instead of 0.1483294829)
+	 *
 	 * @return
 	 */
 	public String getText (Object... keys){
-		if (keys.length ==0) return TextFormat.colorize("&"+c1+this.message);
+		char [] colors = new char[]{color1 == null ? c1 : color1 , color2 == null ? c2 : color2};
+		if (keys.length ==0) return TextFormat.colorize("&"+ colors[0] +this.message);
 		String str = this.message;
 		boolean noColors = false;
 		boolean skipDefaultColors = false;
 		boolean fullFloat = false;
 		int count=1;
-		char [] colors = new char[]{c1,c2};
 		int c = 0;
 		DecimalFormat fmt = new DecimalFormat("####0.##");
 		for (int i = 0; i<keys.length; i++){
@@ -183,30 +213,53 @@ public enum Message {
 		return str;
 	}
 
-	public void initMessage (String message){
+	private void initMessage (String message){
 		this.message = message;
 	}
 
 	private String message;
-	Message(String msg){
+	private Character color1;
+	private Character color2;
+	Message (String msg){
 		message = msg;
+		this.color1 = null;
+		this.color2 = null;
+	}
+	Message (String msg, char color1, char color2){
+		this.message = msg;
+		this.color1 = color1;
+		this.color2 = color2;
+	}
+	Message (String msg, char color){
+		this (msg,color,color);
 	}
 
+	@Override
+	public String toString(){
+		return this.getText("NOCOLOR");
+	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Initialize current class, load messages, etc.
+	 * Call this file in onEnable method after initializing plugin configuration
+	 * @param plg
+	 */
 	public static void init(PluginBase plg){
 		plugin = plg;
-        plugin.getDataFolder().mkdirs();
-		language = plg.getConfig().getNested("general.language","english");
-		plg.getConfig().setNested("general.language", language);
-		debugMode = plg.getConfig().getNested("general.debug-mode",false);
-		plg.getConfig().setNested("general.debug-mode",debugMode);
+		language = plg.getConfig().getString("general.language","english");
+		plg.getConfig().set("general.language", language);
+		debugMode = plg.getConfig().getBoolean("general.debug-mode",false);
+		plg.getConfig().set("general.debug-mode",debugMode);
 		plg.saveConfig();
 		initMessages();
 		saveMessages();
 		LNG_CONFIG.debug(Message.values().length,language,true,debugMode);
 	}
 
+	/**
+	 * Enable debugMode
+	 * @param debug
+	 */
 	public static void setDebugMode (boolean debug){
 		debugMode = debug;
 	}
@@ -245,12 +298,19 @@ public enum Message {
 		}
 	}
 
+	/**
+	 * Send message (formed using join method) to server log if debug mode is enabled
+	 * @param s
+	 */
 	public static boolean debugMessage (Object... s){
 		if (debugMode) plugin.getLogger().info(TextFormat.clean(join (s)));
 		return true;
-
 	}
 
+	/**
+	 * Join object array to string (separated by space)
+	 * @param s
+	 */
 	public static String join (Object... s){
 		StringBuilder sb = new StringBuilder();
 		for (Object o : s){
@@ -259,9 +319,4 @@ public enum Message {
 		}
 		return sb.toString();
 	}
-
-    @Override
-    public String toString(){
-        return this.getText("NOCOLOR");
-    }
 }
